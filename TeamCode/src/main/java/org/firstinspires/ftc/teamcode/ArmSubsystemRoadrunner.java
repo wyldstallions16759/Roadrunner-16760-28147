@@ -14,9 +14,18 @@ public class ArmSubsystemRoadrunner {
     private DcMotor wormGear;
     private DcMotor actuator;
 
-    public ArmSubsystemRoadrunner(HardwareMap hardwareMap){
+    // Telemetry
+    private Telemetry telemetry;
+
+    public ArmSubsystemRoadrunner(HardwareMap hardwareMap, Telemetry telemetry){
         wormGear = hardwareMap.get(DcMotor.class, "Elevation");
         actuator = hardwareMap.get(DcMotor.class, "Extension");
+        wormGear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wormGear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        actuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.telemetry = telemetry;
     }
 
     public class ArmTo implements Action{
@@ -41,25 +50,27 @@ public class ArmSubsystemRoadrunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet){
             int position = wormGear.getCurrentPosition();
+            telemetry.addData("Arm Position: ", position);
+            telemetry.update();
             if (Math.abs(this.target - position) < tolerance){
                 wormGear.setPower(0);
                 return false;
             }
 
-            if (position > target) {
-                wormGear.setPower(-speed);
-            } else {
+            if (position < target) {
                 wormGear.setPower(speed);
+            } else {
+                wormGear.setPower(-speed);
             }
             return true;
         }
     }
 
     public Action armTo(double speed, int target){
-        return new ArmTo(speed, target);
+        return new ArmTo(speed, -target);
     }
     public Action armTo(double speed, int target, int tolerance){
-        return new ArmTo(speed, target, tolerance);
+        return new ArmTo(speed, -target, tolerance);
     }
 
     public class ExtendTo implements Action{
