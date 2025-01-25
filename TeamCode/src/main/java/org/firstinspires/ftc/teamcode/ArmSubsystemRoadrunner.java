@@ -95,6 +95,8 @@ public class ArmSubsystemRoadrunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet){
             int position = actuator.getCurrentPosition();
+            telemetry.addData("Arm Position: ", position);
+            telemetry.update();
             if (Math.abs(this.target - position) < tolerance){
                 actuator.setPower(0);
                 return false;
