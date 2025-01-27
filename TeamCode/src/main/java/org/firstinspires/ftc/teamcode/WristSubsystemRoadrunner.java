@@ -66,6 +66,7 @@ public class WristSubsystemRoadrunner{
 		// open the claw
 		this.claw.setPosition(1);
 		this.clawState = ClawState.OPEN;
+		return new GenericAction();
 	}
 
 	public Action toggleWrist(){
