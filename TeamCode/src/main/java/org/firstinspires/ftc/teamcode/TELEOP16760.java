@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,7 +57,7 @@ public class TELEOP16760 extends LinearOpMode {
     static final Pose2D OBSERVATION = new Pose2D(DistanceUnit.INCH, 96, 0, AngleUnit.DEGREES, 90);
     static final Pose2D POINT1 = new Pose2D(DistanceUnit.INCH, 24, 48, AngleUnit.DEGREES, 90);
 
-
+    private PinpointDrive drive;
 
 //    //private Servo LeftFinger = null;
 //    private Servo RightFinger = null;
@@ -72,6 +74,9 @@ public class TELEOP16760 extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
         Elevation  = hardwareMap.get(DcMotor.class, "Elevation");
         Extension  = hardwareMap.get(DcMotor.class, "Extension");
+
+        //rr
+        drive = new PinpointDrive(hardwareMap, new Pose2d(0,0,0));
 //        //LeftFinger = hardwareMap.get(Servo.class, "LeftFinger");
 //        RightFinger= hardwareMap.get(Servo.class, "RightFinger");
         // create subsystems
@@ -240,6 +245,9 @@ public class TELEOP16760 extends LinearOpMode {
             oldClawButton = claw_toggle;
 
             // Show the elapsed game time and wheel power.
+            PoseVelocity2d pose = drive.updatePoseEstimate();
+            telemetry.addData("PoseX",pose.component1().x);
+            telemetry.addData("PoseY",pose.component1().y);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
