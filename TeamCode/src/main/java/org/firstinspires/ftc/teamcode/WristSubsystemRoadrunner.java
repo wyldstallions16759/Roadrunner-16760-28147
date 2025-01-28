@@ -35,63 +35,120 @@ public class WristSubsystemRoadrunner{
 		claw.scaleRange(0.4, 0.7);
 	}
 
-	public class GenericAction implements Action{
+	public class WristUp implements Action{
 		@Override
 		public boolean run(@NonNull TelemetryPacket packet){
+			wristUp_worker();
+			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
+		}
+	}
+
+	public class WristDown implements Action{
+		@Override
+		public boolean run(@NonNull TelemetryPacket packet){
+			wristDown_worker();
 			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
 		}
 	}
 	
-	public Action wristUp(){
+	private void wristUp_worker(){
 		// move the wrist to the side
 		this.wrist.setPosition(1);
 		this.wristState = WristState.UP;
-		return new GenericAction();
 	}
 	
-	public Action wristDown(){
+	private void wristDown_worker(){
 		// move the wrist to a downward position
 		this.wrist.setPosition(0);
 		this.wristState = WristState.DOWN;
-		return new GenericAction();
 	}
 
-	public Action clawClose(){
+	public class ClawClose implements Action{
+		@Override
+		public boolean run(@NonNull TelemetryPacket packet){
+			clawClose_worker();
+			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
+		}
+	}
+	public class ClawOpen implements Action{
+		@Override
+		public boolean run(@NonNull TelemetryPacket packet){
+			clawOpen_worker();
+			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
+		}
+	}
+
+	private void clawClose_worker(){
 		// move the claw closed
 		this.claw.setPosition(1);
 		this.clawState = ClawState.CLOSED;
-		return new GenericAction();
 	}
 
-	public Action clawOpen(){
+	private void clawOpen_worker(){
 		// open the claw
 		this.claw.setPosition(0);
 		this.clawState = ClawState.OPEN;
-		return new GenericAction();
 	}
 
-	public Action toggleWrist(){
+	public class ClawToggle implements Action{
+		@Override
+		public boolean run(@NonNull TelemetryPacket packet){
+			toggleClaw_worker();
+			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
+		}
+	}
+
+	public class WristToggle implements Action{
+		@Override
+		public boolean run(@NonNull TelemetryPacket packet){
+			toggleWrist_worker();
+			return false; // return false as to do nothing. All actual servo movements will be handled by the class that calls this.
+		}
+	}
+
+	private void toggleWrist_worker(){
 		// opens the wrist if it is closed.
 		// closes the wrist if it is open.
 
 		if (this.wristState == WristState.DOWN){
-			return this.wristUp();
+			this.wristUp_worker();
 		}
 		else{
-			return this.wristDown();
+			this.wristDown_worker();
 		}
 	}
 
-	public Action toggleClaw(){
+	private void toggleClaw_worker(){
 		// opens the claw if it is closed.
 		// closes the claw if it is open.
 
 		if (this.clawState == ClawState.CLOSED){
-			return this.clawOpen();
+			this.clawOpen_worker();
 		}
 		else{
-			return this.clawClose();
+			this.clawClose_worker();
 		}
+	}
+
+	//below: Action creator methods
+
+	public Action wristUp(){
+		return new WristUp();
+	}
+	public Action wristDown(){
+		return new WristDown();
+	}
+	public Action clawClose(){
+		return new ClawClose();
+	}
+	public Action clawOpen(){
+		return new ClawOpen();
+	}
+	public Action toggleClaw(){
+		return new ClawToggle();
+	}
+	public Action toggleWrist(){
+		return new WristToggle();
 	}
 }
 
