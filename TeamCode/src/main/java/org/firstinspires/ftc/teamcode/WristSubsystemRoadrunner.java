@@ -58,14 +58,14 @@ public class WristSubsystemRoadrunner{
 
 	public Action clawClose(){
 		// move the claw closed
-		this.claw.setPosition(0);
+		this.claw.setPosition(1);
 		this.clawState = ClawState.CLOSED;
 		return new GenericAction();
 	}
 
 	public Action clawOpen(){
 		// open the claw
-		this.claw.setPosition(1);
+		this.claw.setPosition(0);
 		this.clawState = ClawState.OPEN;
 		return new GenericAction();
 	}
