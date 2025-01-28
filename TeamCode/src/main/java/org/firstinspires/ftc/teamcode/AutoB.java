@@ -62,6 +62,7 @@ public class AutoB extends LinearOpMode {
 
                     //figure out way to stop
             ));
+            sleep(30000);
         }
     }
 }
