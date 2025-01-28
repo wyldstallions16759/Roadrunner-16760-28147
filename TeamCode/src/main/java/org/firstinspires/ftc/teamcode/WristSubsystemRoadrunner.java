@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import androidx.annoation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -21,7 +22,7 @@ public class WristSubsystemRoadrunner{
 	}
 
 	private WristState wristState = WristState.UP;
-	private ClawState clawState = ClawState.CLOSED;
+	private ClawState clawState = ClawState.OPEN;
 
 	private Telemetry telemetry;
 

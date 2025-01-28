@@ -9,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-
 /*
  * This file contains an example of a Linear "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -62,7 +61,6 @@ public class TELEOP16760 extends LinearOpMode {
 //    private Servo RightFinger = null;
 
     //declare subsystems:
-    //private WristSubsystem wristSubsystem;
 
     public void runOpMode() {
 
@@ -77,6 +75,8 @@ public class TELEOP16760 extends LinearOpMode {
 //        //LeftFinger = hardwareMap.get(Servo.class, "LeftFinger");
 //        RightFinger= hardwareMap.get(Servo.class, "RightFinger");
         // create subsystems
+
+        WristSubsystem Wrist = new WristSubsystem(hardwareMap, telemetry);
 //        ArmSubsystem arm = new ArmSubsystem(hardwareMap,telemetry);
 //        wristSubsystem = new WristSubsystem(hardwareMap, telemetry);
         // ########################################################################################
@@ -214,10 +214,10 @@ public class TELEOP16760 extends LinearOpMode {
             // Wrist Subsystem calls:
 
             if (claw_toggle>0.7 && !(oldClawButton>0.7)){
-                //wristSubsystem.toggleClaw();
+                Wrist.toggleClaw();
             }
             if (wrist_toggle && !oldWristButton){
-                //wristSubsystem.toggleWrist();
+                Wrist.toggleWrist();
             }
 //            if (SUB) {
 //                SUBMERSIBLE = new Pose2D(DistanceUnit.INCH,-29 ,dumb += 2,AngleUnit.DEGREES,0);
@@ -246,9 +246,6 @@ public class TELEOP16760 extends LinearOpMode {
             telemetry.addData("Elevation Encoder: ", "%d", Elevation.getCurrentPosition());
             telemetry.addData("Extension Encoder: ", "%d", Extension.getCurrentPosition());
 //            telemetry.addData("OdoX",());
-
-//            telemetry.addData("ElevationPos: ", arm.getCurrElevPosition());
-//            telemetry.addData("ExtensionPos: ", arm.getCurrExtPosition());
             telemetry.update();
         }
 //l

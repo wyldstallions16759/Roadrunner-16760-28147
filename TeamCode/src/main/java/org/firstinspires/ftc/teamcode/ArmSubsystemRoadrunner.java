@@ -20,6 +20,11 @@ public class ArmSubsystemRoadrunner {
     public ArmSubsystemRoadrunner(HardwareMap hardwareMap, Telemetry telemetry){
         wormGear = hardwareMap.get(DcMotor.class, "Elevation");
         actuator = hardwareMap.get(DcMotor.class, "Extension");
+
+        wormGear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        actuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         wormGear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wormGear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -82,7 +87,7 @@ public class ArmSubsystemRoadrunner {
             super();
             this.speed = speed;
             this.target = target;
-            this.tolerance = 1000;
+            this.tolerance = 10;
         }
 
         public ExtendTo(double speed, int target, int tolerance){
@@ -95,7 +100,7 @@ public class ArmSubsystemRoadrunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet){
             int position = actuator.getCurrentPosition();
-            telemetry.addData("Arm Position: ", position);
+            telemetry.addData("Ext Position: ", position);
             telemetry.update();
             if (Math.abs(this.target - position) < tolerance){
                 actuator.setPower(0);
