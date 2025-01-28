@@ -125,13 +125,13 @@ public class AutoA extends LinearOpMode {
                 wrist.wristDown();
                 stateMachine = StateMachine.DRIVE_TO_SUBMERSIBLE;
             }
-            else if (stateMachine == StateMachine.DRIVE_TO_SUBMERSIBLE) {
-                Actions.runBlocking(
-                        drive.actionBuilder(beginPose)
-                                .splineTo(new Vector2d(30, 30), Math.PI / 2)
-                                .splineTo(new Pose(0, 60), Math.PI)
-                                .build());
-            }
+//            else if (stateMachine == StateMachine.DRIVE_TO_SUBMERSIBLE) {
+//                Actions.runBlocking(
+//                        drive.actionBuilder(beginPose)
+//                                .splineTo(new Vector2d(30, 30), Math.PI / 2)
+//                                .splineTo(new Pose(0, 60), Math.PI)
+//                                .build());
+//            }
             //----------------------------------------------------------
             // State: DRIVE_TO_SUBMERSIBLE
             // Actions: Drive to the front of the submersible and elevate and extend arm
