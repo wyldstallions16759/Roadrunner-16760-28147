@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -31,27 +32,35 @@ public class AutoB extends LinearOpMode {
         while (opModeIsActive()){
             Actions.runBlocking(new SequentialAction(
                     // run this, in parallel
-                    new ParallelAction(
-
-                            wrist.wristDown(),
-                            wrist.clawClose(),
-                            drive.actionBuilder(startPose)
-                                    .strafeToConstantHeading(new Vector2d(2,3))
-                                    .strafeToConstantHeading(new Vector2d(11,1))
-
-                                    .build(),
-                            armSubsystem.extendTo(1, 7000),
-                            armSubsystem.armTo(1, 1700)
-                    ),
-                    armSubsystem.armTo(1, 2000),
-                    armSubsystem.extendTo(1,2000),
+//                    new ParallelAction(
+//
+////                            wrist.wristDown(),
+////                            wrist.clawClose(),
+//                            drive.actionBuilder(startPose)
+////                                    .strafeToConstantHeading(new Vector2d(2,3))
+////                                    .strafeToConstantHeading(new Vector2d(11,1))
+//
+//                                    .build()
+////                            armSubsystem.extendTo(1, 7000),
+////                            armSubsystem.armTo(1, 1700),
+////
+//                    ),
+//                    armSubsystem.armTo(1, 2000),
+//                    armSubsystem.extendTo(1,2000)
+//                    armSubsystem.armTo(1, 0),
+//                    armSubsystem.extendTo(1,0),
                     wrist.clawOpen(),
                     drive.actionBuilder(startPose)
-                            .strafeToConstantHeading(new Vector2d(-6,0))
-                            .strafeToConstantHeading(new Vector2d(0,-6))
+//                            .strafeToConstantHeading(new Vector2d(-3,0))
+//                            .strafeToConstantHeading(new Vector2d(0,-5))
+//                            .strafeToConstantHeading(new Vector2d(14,0))
+                            .turnTo(Math.toRadians(180))//180 degrees
+//                            .strafeToConstantHeading(new Vector2d(0,-3))
+//                            .strafeToConstantHeading(new Vector2d(-14,0))
                             .build()
 
-//
+
+                    //figure out way to stop
             ));
         }
     }
