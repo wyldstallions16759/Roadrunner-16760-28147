@@ -2,20 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.StateMachine;
 import org.firstinspires.ftc.teamcode.Pinpoint.Pinpoint;
 
-@Autonomous(name="AutoBTwoSpec")
-public class AutoB extends LinearOpMode {
+@Autonomous(name="AutoCTwoSpec")
+public class AutoC extends LinearOpMode {
 
     //
     private final double TURN_SCALE_FACTOR = 109.0/360;
@@ -23,8 +20,14 @@ public class AutoB extends LinearOpMode {
     private PinpointDrive drive;
     private ArmSubsystemRoadrunner armSubsystem;
     private WristSubsystemRoadrunner wrist;
-    private Pinpoint pinpoint;
-
+    private pinpointRoadrunner pinpoint;
+    enum stateMachine {
+        turn1,
+        turn2,
+        turn3,
+        turn4,
+        turn5,
+    }
     // pose2ds
     private static Pose2d startPose = new Pose2d(0, 0, 0);
     private static int ArmSub = 1800;
@@ -35,7 +38,7 @@ public class AutoB extends LinearOpMode {
         drive = new PinpointDrive(hardwareMap, startPose);
         armSubsystem = new ArmSubsystemRoadrunner(hardwareMap, telemetry);
         wrist = new WristSubsystemRoadrunner(hardwareMap,telemetry);
-        pinpoint = new Pinpoint(this,hardwareMap,telemetry);
+        pinpoint = new pinpointRoadrunner(this,hardwareMap,telemetry);
 
         waitForStart();
         while (opModeIsActive()){
@@ -65,13 +68,14 @@ public class AutoB extends LinearOpMode {
                         drive.actionBuilder(startPose)
                                 .strafeToConstantHeading(new Vector2d(-3,0))
                                 .strafeToConstantHeading(new Vector2d(0,-5.3))
-                                .strafeToConstantHeading(new Vector2d(11,-0.5))
+                                .strafeToConstantHeading(new Vector2d(11,-0.5))//180 degrees
     //                            .strafeToConstantHeading(new Vector2d(-14,0))
     //                            .endTrajectory()
                                 .build()
                     ),
-                            pinpoint.driveTo(new Pose2D(DistanceUnit.INCH, -56.5, 24, AngleUnit.DEGREES, 180),0.3,0),
+                    pinpoint
                             drive.actionBuilder(startPose)
+                                    .strafeToConstantHeading(new Vector2d(0,3))
                                     .strafeToConstantHeading(new Vector2d(14,0.25))
                                     .strafeToConstantHeading(new Vector2d(-5,0.25))
                                     .build()
