@@ -31,7 +31,7 @@ public class PinpointDrive extends MecanumDrive {
         /*
         Set this to the name that your Pinpoint is configured as in your hardware config.
          */
-        public String pinpointDeviceName = "pinpoint";
+        public String pinpointDeviceName = "odo";
         /*
         Set the odometry pod positions relative to the point that the odometry computer tracks around.
         The X pod offset refers to how far sideways from the tracking point the
@@ -42,10 +42,10 @@ public class PinpointDrive extends MecanumDrive {
          */
         //These are tuned for 3110-0002-0001 Product Insight #1
         // RR localizer note: These units are inches, presets are converted from mm (which is why they are inexact)
-        public double xOffset = -3.3071;
-        public double yOffset = -6.6142;
+        public double xOffset = 4.5;
+        public double yOffset = 3.75;
 
-        /*
+        /*te
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
         the goBILDA_SWINGARM_POD or the goBILDA_4_BAR_POD.
         If you're using another kind of odometry pod, input the number of ticks per millimeter for that pod.
@@ -55,7 +55,7 @@ public class PinpointDrive extends MecanumDrive {
         To get this value from inPerTick, first convert the value to millimeters (multiply by 25.4)
         and then take its inverse (one over the value)
          */
-        public double encoderResolution = GoBildaPinpointDriverRR.goBILDA_4_BAR_POD;
+        public double encoderResolution = GoBildaPinpointDriverRR.goBILDA_SWINGARM_POD;
 
         /*
         Set the direction that each of the two odometry pods count. The X (forward) pod should
