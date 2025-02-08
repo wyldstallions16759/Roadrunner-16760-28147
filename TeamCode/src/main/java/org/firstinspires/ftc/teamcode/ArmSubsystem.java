@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class ArmSubsystem {
 
     // Motors for elevating and extending the arm
-    private DcMotor vertical = null;
-    private DcMotor horizontal = null;
+    private DcMotor ElevatorA = null;
+    private DcMotor ElevatorB = null;
 
     // Use to print to the driver hub
     private Telemetry telemetry;
@@ -25,15 +26,17 @@ public class ArmSubsystem {
 
         // Initialize arm motors
         // Reset the motor encoders so they have a value of 0 at startup
-        vertical = hwMap.get(DcMotor.class, "Verticle");
-        vertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ElevatorA = hwMap.get(DcMotor.class, "ElevatorA");
+        ElevatorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ElevatorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ElevatorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ElevatorA.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        horizontal = hwMap.get(DcMotor.class, "horizontal");
-        horizontal.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        horizontal.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horizontal.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ElevatorB = hwMap.get(DcMotor.class, "ElevatorB");
+        ElevatorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ElevatorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ElevatorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ElevatorB.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     // Set the vertical target position for subsequent armUp and armDown calls
@@ -44,55 +47,91 @@ public class ArmSubsystem {
 
     // Set the horizontal target position for subsequent armExtend and armRetract calls
     // Target is remembered until this function is called again
-    public void sethorizontalTarget(int newPosition){
-        horizontalTarget = newPosition;
-    }
 
     //------------------------------------------------------------------------------------
     // Move arm up at the specified power (0 - 1.0]
     // Return true if target is reached; false if not yet reached.
     // setverticalTarget() MUST be called before calling this function.
     //------------------------------------------------------------------------------------
-    public boolean armUp(double power) {
+    public boolean ElevatorAUp(double power) {
         // Target not yet reached
         // Due to the way the arm motor is oriented, negative power moves it up
-        if (vertical.getCurrentPosition() > verticalTarget) {
-            vertical.setPower(-power);
+        if (ElevatorA.getCurrentPosition() < verticalTarget) {
+            ElevatorA.setPower(power);
             return false;
         }
         // Target reached - current position <= newPosition. Stop motor and return true
-        vertical.setPower(0);
+        ElevatorA.setPower(0);
         return true;
     }
-    public boolean horTo(double speed,int target,int tolerance) {
-        int position = vertical.getCurrentPosition();
-        telemetry.addData("Arm Position: ", position);
+    public boolean ElevatorBUp(double power) {
+        // Target not yet reached
+        // Due to the way the arm motor is oriented, negative power moves it up
+        if (ElevatorB.getCurrentPosition() < verticalTarget) {
+            ElevatorB.setPower(power);
+            return false;
+        }
+        // Target reached - current position <= newPosition. Stop motor and return true
+        ElevatorA.setPower(0);
+        return true;
+    }
+    public boolean ElevatorACatch(double power) {
+        // Target not yet reached
+        // Due to the way the arm motor is oriented, negative power moves it up
+        if (ElevatorA.getCurrentPosition() < ElevatorB.getCurrentPosition()) {
+            ElevatorA.setPower(power+0.02);
+            return false;
+        }
+        // Target reached - current position <= newPosition. Stop motor and return true
+        ElevatorA.setPower(0);
+        return true;
+    }
+    public boolean ElevatorBCatch(double power) {
+        // Target not yet reached
+        // Due to the way the arm motor is oriented, negative power moves it up
+        if (ElevatorB.getCurrentPosition() < ElevatorA.getCurrentPosition()) {
+            ElevatorB.setPower(power+0.02);
+            return false;
+        }
+        // Target reached - current position <= newPosition. Stop motor and return true
+        ElevatorA.setPower(0);
+        return true;
+    }
+    public boolean verTo(double speed,double target,int tolerance,double power) {
+        int positionA = ElevatorA.getCurrentPosition();
+        int positionB = ElevatorB.getCurrentPosition();
+        int combinedPos = (positionA+positionB)/2;
+        telemetry.addData("Arm Position A: ", positionA);
+        telemetry.addData("Arm Position B: ", positionB);
         telemetry.update();
-        if (Math.abs(target - position) < tolerance){
-            vertical.setPower(0);
+        if (Math.abs(target - combinedPos) < tolerance){
+            ElevatorA.setPower(0);
+            ElevatorB.setPower(0);
             return false;
         }
 
-        if (position < target) {
-            vertical.setPower(speed);
-        } else {
-            vertical.setPower(-speed);
-        }
-        return true;
-    }
-    public boolean verTo(double speed,int target,int tolerance) {
-        int position = horizontal.getCurrentPosition();
-        telemetry.addData("Arm Position: ", position);
-        telemetry.update();
-        if (Math.abs(target - position) < tolerance){
-            vertical.setPower(0);
-            return false;
-        }
-
-        if (position < target) {
-            vertical.setPower(speed);
-        } else {
-            vertical.setPower(-speed);
+        if (combinedPos < target) {
+            if (Math.abs(positionA - positionB) < 50) {
+                ElevatorA.setPower(power);
+                ElevatorB.setPower(power);
+            } else if (positionA > positionB || !(Math.abs(positionA - positionB) < 50)) {
+                ElevatorA.setPower(power);
+                ElevatorB.setPower(power + 0.02);
+            } else if (positionB > positionA || !(Math.abs(positionA - positionB) < 50)) {
+                ElevatorB.setPower(power);
+                ElevatorA.setPower(power+0.02);
+            }
+        } else if (combinedPos > target){
+            if (positionA - positionB < 50) {
+                ElevatorA.setPower(-power);
+                ElevatorB.setPower(-power);
+            } else if (positionA > positionB || !(Math.abs(positionA - positionB) < 50)) {
+                ElevatorA.setPower(-power);
+                ElevatorB.setPower(-power + 0.02);
+            } else if (positionB > positionA || !(Math.abs(positionA - positionB) < 50)) {
+                ElevatorB.setPower(-power);
+                ElevatorA.setPower(-power + 0.02);
+            }
         }
         return true;
     }
@@ -101,70 +140,5 @@ public class ArmSubsystem {
     // Return true if target is reached; false if not yet reached.
     // sethorizontalTarget() MUST be called before calling this function.
     //------------------------------------------------------------------------------------
-    public boolean armDown(double power) {
-        // Target not yet reached
-        if (vertical.getCurrentPosition() < verticalTarget) {
-            // Due to the way the arm motor is oriented, positive speed moves it down
-            vertical.setPower(power);
-            return false;
-        }
-        // Target reached - current position >= newPosition. Stop motor and return true
-        vertical.setPower(0);
-        return true;
-    }
 
-    //------------------------------------------------------------------------------------
-    // Extend arm out at the specified power (0 - 1.0]
-    // Return true if target is reached; false if not yet reached.
-    // sethorizontalTarget() MUST be called before calling this function.
-    //------------------------------------------------------------------------------------
-    public boolean armExtend(double power) {
-        // Target not yet reached
-        if (horizontal.getCurrentPosition() < horizontalTarget){
-            telemetry.addData("reached position", 1);
-            // Positive speed extends the arm
-            horizontal.setPower(power);
-            return false;
-        }
-        // Target reached - current position >= newPosition. Stop motor and return true
-        horizontal.setPower(0);
-        return true;
-    }
-
-    //------------------------------------------------------------------------------------
-    // Retract arm at the specified power (0 - 1.0]
-    // Return true if target is reached; false if not yet reached.
-    // sethorizontalTarget() MUST be called before calling this function.
-    //------------------------------------------------------------------------------------
-    public boolean armRetract(double power) {
-        // Target not yet reached
-        if (horizontal.getCurrentPosition() > horizontalTarget){
-            telemetry.addData("reached position", 1);
-            // Negative speed retracts the arm
-            horizontal.setPower(-power);
-            return false;
-        }
-        // Target reached - current position <= newPosition. Stop motor and return true
-        horizontal.setPower(0);
-        return true;
-    }
-
-    //-----------------------------
-    // Getter functions
-    //-----------------------------
-    public int getCurrElevPosition () {
-        return vertical.getCurrentPosition();
-    }
-
-    public int getElevTargetPosition () {
-        return verticalTarget;
-    }
-
-    public int getCurrExtPosition () {
-        return horizontal.getCurrentPosition();
-    }
-
-    public int getExtTargetPosition () {
-        return horizontalTarget;
-    }
 }
